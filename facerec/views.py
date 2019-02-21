@@ -31,6 +31,7 @@ def uploadimg(request):
                 preds = predict(join(settings.MEDIA_ROOT+'/pic/', img_path), knn_clf=knn_clf)
                 print(preds)
                 LIST.append(preds)
+            os.unlink(filepath)
             return HttpResponse(LIST)
     return HttpResponse("failed")
 
