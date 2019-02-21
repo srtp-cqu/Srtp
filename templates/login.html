@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>FaceRec</title>
+</head>
+{% load staticfiles %}
+<script src="{%static 'js/vue.min.js/' %}"></script>
+<body>
+    <div id="container" style="width: 40%;">
+        <!--<ul style="overflow: hidden;list-style-type: none">
+            <li style="float: left">学生登陆</li>
+            <li style="float: left;margin-left: 40px">老师登陆</li>
+        </ul>-->
+        <form enctype="multipart/form-data" method="post" action="/login/">
+            {% csrf_token %}
+            <div id="login">
+            <input name="type" type="radio" id="students" value="students" checked="checked">
+            <label  for="students">学生</label>
+            <input name="type" type="radio" id="teachers" value="students">
+            <label for="students">老师</label>
+            <br/>
+            <label for="name">姓名：</label>
+            <input type="text" id="name" name="name">
+            <br/>
+            <label for="pwd">密码：</label>
+            <input type="text" id="pwd" name="pwd">
+            <br/>
+            <button type="submit">登陆</button>
+            <button type="button" onclick="register()">注册</button>
+        </div>
+        </form>
+
+    </div>
+</body>
+<script>
+    function register() {
+        window.location = "/register"
+    }
+</script>
+</html>

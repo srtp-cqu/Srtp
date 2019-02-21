@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>FaceRec</title>
+</head>
+{% load staticfiles %}
+<script src="{%static 'js/vue.min.js/' %}"></script>
+<body>
+    <div id="register">
+        <form action="/register/" enctype="multipart/form-data" method="post">
+            {% csrf_token %}
+            <input name="type" type="radio" id="students" value="students" checked="checked" onclick="status1()">
+            <label  for="students">学生</label>
+            <input name="type" type="radio" id="teachers" value="teachers" onclick="status2()">
+            <label for="teachers">老师</label>
+            <br/>
+            <label for="name">姓名：</label>
+            <input type="text" id="name" name="name">
+            <br/>
+            <label for="pwd">密码：</label>
+            <input type="text" id="pwd" name="pwd">
+            <br/>
+            <label for="img" v-if="ok">上传头像：</label>
+            <input type="file" id="img" v-if="ok" name="img">
+            <br/>
+            <button type="button" onclick="back()">返回登陆</button>
+            <button type="submit">注册</button>
+        </form>
+    </div>
+</body>
+<script>
+    var app = new Vue({
+        el:"#register",
+        data:{
+            ok:true
+        }
+    })
+    function status1() {
+        app.ok = true
+    }
+    function status2() {
+        app.ok = false
+    }
+    function back() {
+        window.location = "/login"
+    }
+</script>
+<script>
+
+</script>
+</html>
