@@ -17,14 +17,14 @@
             <div id="login">
             <input name="type" type="radio" id="students" value="students" checked="checked">
             <label  for="students">学生</label>
-            <input name="type" type="radio" id="teachers" value="students">
-            <label for="students">老师</label>
+            <input name="type" type="radio" id="teachers" value="teachers">
+            <label for="teachers">老师</label>
             <br/>
             <label for="name">姓名：</label>
-            <input type="text" id="name" name="name">
+            <input type="text" id="name" name="name">{{ content }}
             <br/>
             <label for="pwd">密码：</label>
-            <input type="text" id="pwd" name="pwd">
+            <input type="text" id="pwd" name="pwd">{{ status }}
             <br/>
             <button type="submit">登陆</button>
             <button type="button" onclick="register()">注册</button>

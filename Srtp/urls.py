@@ -23,5 +23,6 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('upload/',views.upload),
     path('uploadimg/',views.uploadimg),
+    path('facerec/',views.facerecpage),
     path('',include('LoginRegister.urls'))
 ]

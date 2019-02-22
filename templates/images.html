@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>FACE CHECK</title>
+    <style>
+        .imagePage{
+            display:flex;
+            flex-direction:row;
+            justify-content:center;
+            position: absolute;
+            left:0;top:0;
+            min-height: 100vh;
+            min-width: 100vw;
+            z-index: -1;
+            padding-top: 150px;
+        }
+        .imagePage .info{
+            width: 400px;
+            padding: 0;
+        }
+        .imagePage .info p{
+            margin: 0;
+        }
+        .imagePage .camera{
+            border: 1px black solid;
+            border-radius: 50px;
+            width: 400px;
+            height: 400px;
+            overflow: hidden;
+            position: relative;
+        }
+        .imagePage .output{
+            margin-left: 150px;
+        }
+        .imagePage .output div:nth-child(1){
+            border: 1px black solid;
+            border-radius: 250px;
+            width: 250px;
+            height: 250px;
+            overflow: hidden;
+        }
+        .imagePage .output div:nth-child(2){
+            left: 80px;
+            top: 80px;
+        }
+        #line{
+            height: 300px;
+            top: 50px;
+            width: 1px;
+            opacity: 0.8;
+            left: 50px;
+            position: absolute;
+            animation: lineMove 2s infinite linear;
+            animation-delay: 1s;
+        }
+        .line{
+            position: absolute;
+            top: 50px;
+            height: 300px;
+            background-color: grey;
+            width: 200px;
+            left: -200px;
+        }
+        @keyframes lineMove {
+            0%{left: 0px;border: 1px green solid;}
+            50%{left:400px;border: 1px green solid;}
+            to{left: 0px;border: 1px green solid;}
+        }
+        @keyframes lineStop1 {
+            0%{left: -200px}
+            50%{left: 0}
+            100%{left: -200px}
+        }
+        @keyframes lineStop2 {
+            0%{left: 400px}
+            50%{left: 200px}
+            100%{left: 400px}
+        }
+    </style>
+</head>
+{% load staticfiles %}
+<script src="{%static 'js/jQuery.js' %}"></script>
+<script src="{%static 'js/materialize.min.js' %}"></script>
+<link rel="stylesheet" href="{%static 'css/materialize.min.css' %}">
+
+<body>
+<!--<nav style="position: fixed">
+    <div class="nav-wrapper white" >
+        <a href="/" class="brand-logo" style="margin-left: 18px;font-size:18px;color: rgba(0,0,0,0.54)"><img src="../static/img/logo.png" width="70" height="60">cartoon's eyes</a>
+        <ul id="nav-mobile" class="right hide-on-med-and-down" style="color: rgba(0,0,0,0.78)">
+            <li><a class="waves-effect waves-light btn indigo darken-4 white-text" href="/camera" style="color: rgba(0,0,0,0.78)">头像</a></li>
+            <li><a class="waves-effect waves-light btn indigo darken-4 white-text" href="/picture" style="color: rgba(0,0,0,0.78)">图片</a></li>
+        </ul>
+    </div>
+</nav>-->
+<div class="indigo darken-4 imagePage" >
+    <div class="info">
+        <p style="color: rgba(255,255,255,0.78);font-size:34px" class="thin">
+            人脸检测器
+        </p>
+        <p style="color: rgba(255,255,255,0.54);font-size: 18px;margin-top: 40px">
+            使用前请开启摄像头<br><br>
+            点击按键，静候几秒钟，<br>
+            就可以开始人脸识别了<br><br>
+        </p>
+    </div>
+    <div class="camera indigo darken-3">
+        <div id="line"></div>
+        <div class="line" id="line1"></div>
+        <div class="line" id="line2"></div>
+        <video id="video" width="400px" height="400px">
+
+        </video>
+    </div>
+    <div class="output">
+        <div class="indigo darken-3">
+            <img id='image' src="{%static 'img/camera.png' %}" style="width:250px;height: 250px;">
+        </div>
+        <div id="button" class="waves-effect waves-light btn indigo darken-2" onclick="control()">
+            开始检测
+        </div>
+    </div>
+</div>
+
+<div id="modal1" class="modal modal-fixed-footer">
+    <div class="modal-content">
+        <div class="row">
+            <form class="col s12">
+                <div class="row">
+                    <div class="input-field col s6">
+                        <input placeholder="占位提示" id="first_name" type="text" class="validate">
+                        <label for="first_name">姓名</label>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="input-field col s12">
+                        <input id="password" type="password" class="validate">
+                        <label for="password">密码</label>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="input-field col s12">
+                        <input id="email" type="email" class="validate">
+                        <label for="email">邮件</label>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <a href="#" class="modal-action modal-close waves-effect waves-green btn-flat" >同意</a>
+    </div>
+</div>
+</body>
+<script>
+    $(document).ready(function(){
+        // the "href" attribute of .modal-trigger must specify the modal ID that wants to be triggered
+        $('.modal').modal();
+        let video = document.getElementById('video');
+        if(navigator.getUserMedia){
+            navigator.getUserMedia({"video":true},function (stream) {
+                video.srcObject = stream;
+                video.play();
+            },function (err) {
+                console.log(err)
+            })
+        }
+    });
+    let state = 0;
+    function control() {
+        if(state === 0) {
+            let video = document.getElementById('video');
+            video.pause();
+            document.getElementById('line').style.animation = "none";
+            document.getElementById('line').style.display = 'none';
+            document.getElementById('button').innerText = '重新开始';
+            document.getElementById('line1').style.animation = 'lineStop1 0.5s ease-out';
+            document.getElementById('line2').style.animation = 'lineStop2 0.5s ease-out';
+            document.getElementById('image').src = '../static/img/computer.png'
+            state = 1;
+        }
+        else{
+            let video = document.getElementById('video');
+            video.play();
+            document.getElementById('line').style.animation = 'lineMove 2s infinite linear';
+            document.getElementById('line').style.display = 'block';
+            document.getElementById('button').innerText = '生成图片';
+            document.getElementById('line1').style.animation = 'none';
+            document.getElementById('line2').style.animation = 'none';
+            document.getElementById('image').src = '../static/img/camera.png'
+            state = 0;
+        }
+    }
+</script>
+</html>

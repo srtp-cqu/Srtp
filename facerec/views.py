@@ -10,7 +10,7 @@ from sklearn import neighbors
 from django.shortcuts import render
 import os
 from django.conf import settings
-from django.shortcuts import HttpResponse
+from django.shortcuts import HttpResponse,redirect
 # Create your views here.
 ALLOWED_EXTENSTIONS = {'png','jpg','jepg'}
 LIST = []
@@ -18,6 +18,12 @@ LIST = []
 def upload(request):
     return render(request,'upload.html')
 
+def facerecpage(request):
+    #c = request.COOKIES.get('username')
+    t = request.COOKIES.get('type')
+    if t != "teachers":
+        return redirect('/login/', 302)
+    return render(request,'images.html')
 
 def uploadimg(request):
     LIST = []
