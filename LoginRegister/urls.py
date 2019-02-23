@@ -7,5 +7,6 @@ urlpatterns = [
     path('login/',views.login),
     path('register/',views.register),
     path('students/',views.userinfo)
+    #path('show/',views.show)
     # url(r'^static/(?P<path>.*)$','django.views.static.server',{'document_root':settings.STATIC_URL})
 ]

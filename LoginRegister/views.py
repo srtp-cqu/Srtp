@@ -89,6 +89,11 @@ def register(request):
             obj.save()
             return redirect('/login/',302)
 
+# def show(request):
+#     from LoginRegister import models
+#     user_list = models.Students.all.values_list('name')
+#     print(type(user_list))
+#     print(user_list)
 
 def userinfo(request):
     #c = request.COOKIES.get('username')

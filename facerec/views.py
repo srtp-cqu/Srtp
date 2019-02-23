@@ -5,18 +5,32 @@ from os.path import isdir, join, isfile, splitext
 import pickle
 from PIL import Image, ImageFont, ImageDraw, ImageEnhance
 from face_recognition import face_locations
-from face_recognition.cli import image_files_in_folder
+from face_recognition.face_detection_cli import image_files_in_folder
 from sklearn import neighbors
 from django.shortcuts import render
 import os
 from django.conf import settings
 from django.shortcuts import HttpResponse,redirect
 # Create your views here.
-ALLOWED_EXTENSTIONS = {'png','jpg','jepg'}
+ALLOWED_EXTENSTIONS = {'png','jpg','jpeg'}
 LIST = []
 
 def upload(request):
+   # show()
     return render(request,'upload.html')
+
+
+def show():                               #获取所有的学生信息
+    from LoginRegister import models
+    user_list = models.Students.objects.all().values('name')
+    us_list=list(user_list)
+    user = []
+    for us in user_list:
+        user.append(us['name'])
+    # print(type(user))
+    # print(user)
+    return user
+
 
 def facerecpage(request):
     #c = request.COOKIES.get('username')
@@ -26,7 +40,11 @@ def facerecpage(request):
     return render(request,'images.html')
 
 def uploadimg(request):
+    print(show())
+    all_user = show()
+    lack = []                   #缺少的人
     LIST = []
+    pic_user = []
     f = request.FILES['image']
     filepath = os.path.join(settings.MEDIA_ROOT + '/pic/', f.name)
     with open(filepath, 'wb') as fp:
@@ -35,14 +53,27 @@ def uploadimg(request):
             knn_clf = train(settings.MEDIA_ROOT+'/train/')
             for img_path in listdir(settings.MEDIA_ROOT+'/pic/'):
                 preds = predict(join(settings.MEDIA_ROOT+'/pic/', img_path), knn_clf=knn_clf)
-                print(preds)
+
                 LIST.append(preds)
+            #print(LIST)
+            #print(preds[0])
+            #print(type(preds[0]))
+            for person in preds:
+                pic_user.append(person[0])
+            print(pic_user)
+            for user in all_user:
+                if user not in pic_user:
+                   lack.append(user)
+            print(lack)
             os.unlink(filepath)
-            return HttpResponse(LIST)
+            return HttpResponse(pic_user)
     return HttpResponse("failed")
 
 
 def train(train_dir,model_save_path = "",n_neighbors = None,knn_algo = "ball_tree",verbose = False):
+    # 参数 train_dir 包含每个已知人员以及其名称的子目录
+    # model_save_path： 模型保存在磁盘上的路径
+
     X = []
     Y = []
     for class_dir in listdir(train_dir):
@@ -72,6 +103,7 @@ def train(train_dir,model_save_path = "",n_neighbors = None,knn_algo = "ball_tre
     return knn_clf
 
 
+
 def predict(X_img_path,knn_clf = None,model_save_path = "",DIST_THRESH = .5):
     if not isfile(X_img_path) or splitext(X_img_path)[1][1:] not in ALLOWED_EXTENSTIONS:
         raise Exception("invalid image path: {}".format(X_img_path))
@@ -91,5 +123,6 @@ def predict(X_img_path,knn_clf = None,model_save_path = "",DIST_THRESH = .5):
     closest_distances = knn_clf.kneighbors(faces_encodings, n_neighbors=1)
 
     is_recognized = [closest_distances[0][i][0] <= DIST_THRESH for i in range(len(X_faces_loc))]
+
 
     return [(pred,loc) if rec else ("N/A",loc) for pred, loc, rec in zip(knn_clf.predict(faces_encodings),X_faces_loc,is_recognized)]
