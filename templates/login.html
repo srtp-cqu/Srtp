@@ -6,14 +6,20 @@
 </head>
 {% load staticfiles %}
 <script src="{%static 'js/vue.min.js/' %}"></script>
-<body>
-    <div id="container" style="width: 40%;">
+<script src="{%static 'js/jQuery.js' %}"></script>
+<script src="{%static 'js/materialize.min.js' %}"></script>
+<link rel="stylesheet" href="{%static 'css/materialize.min.css' %}">
+
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+<body style="background-color: #1a237e ">
+<!--    <div id="container" style="width: 40%;">
         <!--<ul style="overflow: hidden;list-style-type: none">
             <li style="float: left">学生登陆</li>
             <li style="float: left;margin-left: 40px">老师登陆</li>
-        </ul>-->
+        </ul>>
         <form enctype="multipart/form-data" method="post" action="/login/">
-            {% csrf_token %}
+
             <div id="login">
             <input name="type" type="radio" id="students" value="students" checked="checked">
             <label  for="students">学生</label>
@@ -21,21 +27,76 @@
             <label for="teachers">老师</label>
             <br/>
             <label for="name">姓名：</label>
-            <input type="text" id="name" name="name">{{ content }}
+            <input type="text" id="name" name="name">
             <br/>
             <label for="pwd">密码：</label>
-            <input type="text" id="pwd" name="pwd">{{ status }}
+            <input type="text" id="pwd" name="pwd">
             <br/>
             <button type="submit">登陆</button>
             <button type="button" onclick="register()">注册</button>
         </div>
         </form>
-
     </div>
+-->
+
+
+  <div class="row">
+      <div class="col s12 m4"></div>
+
+        <div class="col s12 m4" >
+
+
+            <div class="card "  style="background-color: #0D47A1;" id="login">
+             <div class="card-content white-text">
+
+                <form enctype="multipart/form-data" method="post" action="/login/">
+                     {% csrf_token %}
+
+                    <p>
+                        <label for="students">
+                          <input name="type" type="radio" id="students" value="students" checked="checked" class="with-gap" /><span >学生</span>
+                        </label>
+                        <label for="teachers">
+                          <input name="type" type="radio" id="teachers" value="teachers" class="with-gap" />
+                          <span >老师</span>
+                      </label>
+                    </p>
+
+                    <label for="name">姓名：</label>
+                    <input type="text" id="name" name="name">{{ content }}
+                    <br/>
+                    <label for="pwd">密码：</label>
+                    <input type="text" id="pwd" name="pwd">{{ status }}
+                    <br/>
+
+
+                <div class="card-action">
+                    <button class="waves-effect waves-light btn" type="submit"> <i class="material-icons right">send</i> 登陆</button>
+                    <button class="waves-effect waves-light btn" type="button" onclick="register()">  注册<i class="material-icons left">cloud</i></button>
+                </div>
+                </form>
+             </div>
+            </div>
+
+        </div>
+
+
+
+      <div class="col s12 m4"></div>
+  </div>
+
 </body>
 <script>
     function register() {
         window.location = "/register"
     }
+
+
+    /*$('.datepicker').pickadate({
+         selectMonths: true, // Creates a dropdown to control month
+         selectYears: 15 // Creates a dropdown of 15 years to control year
+     });*/
+
+
 </script>
 </html>
