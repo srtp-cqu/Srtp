@@ -2,11 +2,64 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Student Info</title>
+    <title>FaceRec</title>
+    <style>
+        img {
+    display: block;
+    border-radius: 2px 2px 0 0;
+    position: relative;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    width: 100%;
+}
+    </style>
 </head>
-<body>
-    <div>
-        <p>student info</p>
+{% load staticfiles %}
+<script src="{%static 'js/vue.min.js/' %}"></script>
+
+<script src="{%static 'js/jQuery.js' %}"></script>
+<script src="{%static 'js/materialize.min.js' %}"></script>
+<link rel="stylesheet" href="{%static 'css/materialize.min.css' %}">
+
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+<body style="background-color: #1a237e">
+
+<div class="row"></div>
+<div class="row"></div>
+<div class="row"></div>
+
+<div class="row"></div>
+
+<div  class="container">
+  <div class="row">
+    <div class="col s12 m5">
+      <div class="card " style="background-color: #1F266B !important;">
+        <div class="card-image">
+            <img src="{%static 'img/sample-1.jpg' %}">
+        </div>
+        <div class="card-content">
+           <div class="row">
+             <div class="input-field col s12">
+             <input style="color: white" disabled value="name" id="disabled" type="text" class="validate">
+             <label style="color: white" for="disabled">姓名</label>
+             </div>
+               <div class="input-field col s12">
+             <input style="color: white" disabled value="name" id="disabled" type="text" class="validate">
+             <label style="color: white" for="disabled">学号</label>
+             </div>
+           </div>
+        </div>
+        <div class="card-action">
+          <a href="#">个人信息</a>
+        </div>
+      </div>
     </div>
+  </div>
+</div>
+
+
+
 </body>
 </html>
