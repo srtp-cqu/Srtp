@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>FACE CHECK</title>
+    <style>
+        .imagePage{
+            display:flex;
+            flex-direction:row;
+            justify-content:center;
+            position: absolute;
+            left:0;top:0;
+            min-height: 100vh;
+            min-width: 100vw;
+            z-index: -1;
+            padding-top: 150px;
+        }
+        .imagePage .info{
+            width: 400px;
+            padding: 0;
+        }
+        .imagePage .info p{
+            margin: 0;
+        }
+        .imagePage .camera{
+            border: 1px black solid;
+            border-radius: 50px;
+            width: 400px;
+            height: 400px;
+            overflow: hidden;
+            position: relative;
+        }
+        .imagePage .output{
+            margin-left: 150px;
+        }
+        .imagePage .output div:nth-child(1){
+            border: 1px black solid;
+            border-radius: 250px;
+            width: 250px;
+            height: 250px;
+            overflow: hidden;
+        }
+        .imagePage .output div:nth-child(2){
+            left: 80px;
+            top: 80px;
+        }
+        #line{
+            height: 300px;
+            top: 50px;
+            width: 1px;
+            opacity: 0.8;
+            left: 50px;
+            position: absolute;
+            animation: lineMove 2s infinite linear;
+            animation-delay: 1s;
+        }
+        .line{
+            position: absolute;
+            top: 50px;
+            height: 300px;
+            background-color: grey;
+            width: 200px;
+            left: -200px;
+        }
+        @keyframes lineMove {
+            0%{left: 0px;border: 1px green solid;}
+            50%{left:400px;border: 1px green solid;}
+            to{left: 0px;border: 1px green solid;}
+        }
+        @keyframes lineStop1 {
+            0%{left: -200px}
+            50%{left: 0}
+            100%{left: -200px}
+        }
+        @keyframes lineStop2 {
+            0%{left: 400px}
+            50%{left: 200px}
+            100%{left: 400px}
+        }
+    </style>
+</head>
+{% load staticfiles %}
+<script src="{%static 'js/vue.min.js/' %}"></script>
+<script src="{%static 'js/jQuery.js' %}"></script>
+<script src="{%static 'js/materialize.min.js' %}"></script>
+<link rel="stylesheet" href="{%static 'css/materialize.min.css' %}">
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+<body>
+<nav style="position: fixed">
+    <div class="nav-wrapper white" style="background-color:#283593!important">
+        <ul id="nav-mobile" class="right hide-on-med-and-down" style="color: rgba(0,0,0,0.78)">
+            <li><a class="waves-effect waves-light btn indigo darken-4 white-text modal-trigger" href="#modal1" style="color: rgba(0,0,0,0.78)">登陆</a></li>
+            <li><a class="waves-effect waves-light btn indigo darken-4 white-text modal-trigger" href="#modal2" style="color: rgba(0,0,0,0.78)">注册</a></li>
+        </ul>
+    </div>
+</nav>
+<div class="indigo darken-4 imagePage" >
+    <div class="info">
+        <p style="color: rgba(255,255,255,0.78);font-size:34px" class="thin">
+            人脸检测器
+        </p>
+        <p style="color: rgba(255,255,255,0.54);font-size: 18px;margin-top: 40px">
+            使用前请开启摄像头<br><br>
+            点击按键，静候几秒钟，<br>
+            就可以开始人脸识别了<br><br>
+        </p>
+    </div>
+    <div class="camera indigo darken-3">
+        <div id="line"></div>
+        <div class="line" id="line1"></div>
+        <div class="line" id="line2"></div>
+        <video id="video" width="400px" height="400px">
+
+        </video>
+    </div>
+    <div class="output">
+        <div class="indigo darken-3">
+            <img id='image' src="../static/img/camera.png" style="width:250px;height: 250px;">
+        </div>
+        <div id="button" class="waves-effect waves-light btn indigo darken-2" disabled="disabled" onclick="control()">
+            开始检测
+        </div>
+    </div>
+</div>
+
+<div id="modal1" class="modal" style="width:30%;max-height:60%">
+    <div class="modal-content">
+        <div class="row">
+            <form id="loginform" enctype="multipart/form-data" method="post" action="/login/">
+                     {% csrf_token %}
+
+                    <p>
+                        <label for="students">
+                          <input name="type" type="radio" id="students" value="students" checked="checked" class="with-gap" /><span >学生</span>
+                        </label>
+                        <label for="teachers">
+                          <input name="type" type="radio" id="teachers" value="teachers" class="with-gap" />
+                          <span >老师</span>
+                      </label>
+                    </p>
+
+                    <label for="name">姓名：</label>
+                    <input type="text" id="name" name="name">{{ content }}
+                    <br/>
+                    <label for="pwd">密码：</label>
+                    <input type="text" id="pwd" name="pwd">{{ status }}
+                    <br/>
+
+
+                <div class="card-action">
+                    <button class="waves-effect waves-light btn" type="submit"> <i class="material-icons right">send</i> 登陆</button>
+                    <button class="waves-effect waves-light btn" onclick = "register()" type="button">注册 <i class="material-icons left">cloud</i></button>
+                </div>
+                </form>
+        </div>
+    </div>
+</div>
+<div id="modal2" class="modal" style="width:30%;max-height:60%">
+    <div class="modal-content">
+        <div class="row">
+            <form id="registerForm" enctype="multipart/form-data" method="post" action="/register/">
+            {% csrf_token %}
+            <div id="register">
+             <div>
+                 <p>
+                        <label for="students1">
+                          <input name="type" type="radio" id="students1" value="students" checked="checked" class="with-gap" onclick="status1()" /><span >学生</span>
+                        </label>
+                        <label for="teachers1">
+                          <input name="type" type="radio" id="teachers1" value="teachers" class="with-gap" onclick="status2()" />
+                          <span >老师</span>
+                      </label>
+                 </p>
+
+                 <br>
+                 <label for="name">姓名：</label>
+                 <input type="text" id="name1" name="name">{{ content }}
+                 <br/>
+                 <label for="pwd">密码：</label>
+                 <input type="text" id="pwd1" name="pwd">{{ status }}
+                 <br/>
+                 <label for="img" v-if="ok">上传头像：</label>
+                 <input type="file" id="img" v-if="ok" name="img">
+
+                <div class="card-action">
+                    <button class="waves-effect waves-light btn" type="button" onclick="back()"> <i class="material-icons right">send</i> 登陆</button>
+                    <button class="waves-effect waves-light btn" type="submit">  注册<i class="material-icons left">cloud</i></button>
+                </div>
+             </div>
+            </div>
+            </form>
+        </div>
+    </div>
+</div>
+</body>
+<script>
+	var LoginForm = document.getElementById("loginform");
+	var RegisterForm = document.getElementById("registerForm");
+	LoginForm.onsubmit = function(){
+		let name = document.getElementById('name');
+		let pwd =document.getElementById('pwd');
+		if (name.value === "") {
+			alert("姓名不能为空");
+			return false;
+		} else if(pwd.value === "") {
+			alert("密码不能为空");
+			return false
+		} else {
+			return true
+		}
+	}
+	RegisterForm.onsubmit = function() {
+		if (document.getElementById("students1").checked === true){
+			if (document.getElementById("name1").value === ""){
+				alert("姓名不能为空");
+				return false;
+			} else if (document.getElementById("pwd1").value === ""){
+				alert("密码不能为空");
+				return false;
+			} else if (document.getElementById("img").value === ""){
+				alert("图片不能为空");
+				return false;
+			} else {
+				return true;
+			}
+		} else{
+			if (document.getElementById("name1").value === ""){
+				alert("姓名不能为空");
+				return false;
+			} else if (document.getElementById("pwd1").value === ""){
+				alert("密码不能为空");
+				return false;
+			} else {
+				return true;
+			}
+		}
+	}
+	var app = new Vue({
+			el:"#register",
+			data:{
+				ok:true
+			}
+		})
+	function status1() {
+		app.ok = true
+	}
+	function status2() {
+		app.ok = false
+	}
+	function back() {
+		window.location = "/login"
+	}
+    $(document).ready(function(){
+        // the "href" attribute of .modal-trigger must specify the modal ID that wants to be triggered
+        $('#modal1').modal();
+		$('#modal2').modal();
+        let video = document.getElementById('video');
+        if(navigator.getUserMedia){
+            navigator.getUserMedia({"video":true},function (stream) {
+                video.srcObject = stream;
+                video.play();
+            },function (err) {
+                console.log(err)
+            })
+        }
+    });
+    let state = 0;
+    function control() {
+        if(state === 0) {
+            let video = document.getElementById('video');
+            video.pause();
+            document.getElementById('line').style.animation = "none";
+            document.getElementById('line').style.display = 'none';
+            document.getElementById('button').innerText = '重新开始';
+            document.getElementById('line1').style.animation = 'lineStop1 0.5s ease-out';
+            document.getElementById('line2').style.animation = 'lineStop2 0.5s ease-out';
+            document.getElementById('image').src = '../static/img/computer.png'
+            state = 1;
+        }
+        else{
+            let video = document.getElementById('video');
+            video.play();
+            document.getElementById('line').style.animation = 'lineMove 2s infinite linear';
+            document.getElementById('line').style.display = 'block';
+            document.getElementById('button').innerText = '生成图片';
+            document.getElementById('line1').style.animation = 'none';
+            document.getElementById('line2').style.animation = 'none';
+            document.getElementById('image').src = '../static/img/camera.png'
+            state = 0;
+        }
+    }
+	//function open1() {
+	//	let elem1 = document.querySelectorAll('.modal')[0];
+	//	let instance1 = M.Modal.getInstance(elem1);
+	//	instance1.open()
+	//}
+	
+	function register() {
+		//let elem1 = document.querySelectorAll('.modal')[0];
+		//let elem2 = document.querySelectorAll('.modal')[1];
+		//let instance1 = M.Modal.getInstance(elem1);
+		//let instance2 = M.Modal.getInstance(elem2);
+	//	instance1.destroy()
+		//instance2.open()
+		$('#modal1').modal('close');
+		window.setTimeout(function(){
+			$('#modal2').modal('open');
+		},300)
+	}
+	function back(){
+		$('#modal2').modal('close');
+		window.setTimeout(function(){
+			$('#modal1').modal('open');
+		},300)
+	}
+	
+</script>
+</html>

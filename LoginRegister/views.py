@@ -4,6 +4,10 @@ from django.conf import settings
 from django.contrib.auth.hashers import make_password,check_password
 from LoginRegister import models
 # Create your views here.
+def index(request):
+    return render(request,'index.html')
+
+	
 def login(request):
     if request.method == 'GET':
         return render(request,'login.html')
@@ -83,21 +87,16 @@ def register(request):
                     fp.write(info)
             obj = models.Students(name=username,password=dj_pwd,imgpath=storePath)
             obj.save()
-            return redirect('/login/',302)
+            return redirect('/',302)
         else:
             obj = models.Teachers(name=username,password=dj_pwd)
             obj.save()
-            return redirect('/login/',302)
+            return redirect('/',302)
 
-# def show(request):
-#     from LoginRegister import models
-#     user_list = models.Students.all.values_list('name')
-#     print(type(user_list))
-#     print(user_list)
 
 def userinfo(request):
     #c = request.COOKIES.get('username')
     t = request.COOKIES.get('type')
     if t != "students":
-        return redirect('/login/',302)
+        return redirect('/',302)
     return render(request,'userinfo.html')

@@ -5,21 +5,24 @@ from os.path import isdir, join, isfile, splitext
 import pickle
 from PIL import Image, ImageFont, ImageDraw, ImageEnhance
 from face_recognition import face_locations
-from face_recognition.face_detection_cli import image_files_in_folder
+from face_recognition.face_recognition_cli import image_files_in_folder
 from sklearn import neighbors
 from django.shortcuts import render
-import os
+import os,base64
+import requests as req
 from django.conf import settings
 from django.shortcuts import HttpResponse,redirect
+from urllib import parse,request
+import urllib
+from io import BytesIO
 # Create your views here.
 ALLOWED_EXTENSTIONS = {'png','jpg','jpeg'}
 LIST = []
 
 def upload(request):
-   # show()
     return render(request,'upload.html')
 
-
+	
 def show():                               #获取所有的学生信息
     from LoginRegister import models
     user_list = models.Students.objects.all().values('name')
@@ -30,50 +33,87 @@ def show():                               #获取所有的学生信息
     # print(type(user))
     # print(user)
     return user
-
-
+	
+	
 def facerecpage(request):
     #c = request.COOKIES.get('username')
     t = request.COOKIES.get('type')
     if t != "teachers":
-        return redirect('/login/', 302)
-    return render(request,'images.html')
+        return redirect('/', 302)
+    if request.method == "GET":
+        return render(request,'images.html')
+    elif request.method == "POST":
+        print("post")
+        url = 'http://120.79.240.163:8000/takepic/'
+        data_con = {'action':'takepic'}
+        data = urllib.parse.urlencode(data_con).encode('utf-8')
+        r = urllib.request.Request(url=url,data=data,headers={'content-Type':'application/x-www-form-rulencoded'})
+        ans = urllib.request.urlopen(r).read().decode('utf-8')
+        print(ans)
+        # img_url = "http://holder.org:65530/static/img/image.jpg"
+        # file_path = settings.MEDIA_ROOT+'/pic'
+        # ext = os.path.splitext(img_url)[1]
+        # file_name = "temp"
+        # response = req.get(img_url)
+        # image = Image.open(BytesIO(response.content))
+        # ls_f = base64.b64encode(BytesIO(response.content).read())
+        # print (type(ls_f))
+        # imgdata = base64.b64decode(ls_f)
+        # filepath = os.path.join(settings.MEDIA_ROOT+'/pic/',file_name+ext)
+        # with open(filepath,'wb') as fp:
+        #     fp.write(imgdata)
+        # fp.close()
+        return HttpResponse("success")
 
 def uploadimg(request):
-    print(show())
     all_user = show()
-    lack = []                   #缺少的人
+    lack = []
     LIST = []
     pic_user = []
-    f = request.FILES['image']
-    filepath = os.path.join(settings.MEDIA_ROOT + '/pic/', f.name)
+    #f = request.FILES['image']
+    img_url = request.POST.get('url')
+    #filepath = os.path.join(settings.MEDIA_ROOT + '/pic/', f.name)
+    file_path = settings.MEDIA_ROOT + '/pic'
+    ext = os.path.splitext(img_url)[1]
+    file_name = "temp"
+    response = req.get(img_url)
+    image = Image.open(BytesIO(response.content))
+    ls_f = base64.b64encode(BytesIO(response.content).read())
+    print(type(ls_f))
+    imgdata = base64.b64decode(ls_f)
+    filepath = os.path.join(settings.MEDIA_ROOT + '/pic/', file_name + ext)
     with open(filepath, 'wb') as fp:
-        for info in f.chunks():
-            fp.write(info)
-            knn_clf = train(settings.MEDIA_ROOT+'/train/')
-            for img_path in listdir(settings.MEDIA_ROOT+'/pic/'):
-                preds = predict(join(settings.MEDIA_ROOT+'/pic/', img_path), knn_clf=knn_clf)
-
-                LIST.append(preds)
-            #print(LIST)
-            #print(preds[0])
-            #print(type(preds[0]))
-            for person in preds:
-                pic_user.append(person[0])
-            print(pic_user)
-            for user in all_user:
-                if user not in pic_user:
-                   lack.append(user)
-            print(lack)
-            os.unlink(filepath)
-            return HttpResponse(pic_user)
-    return HttpResponse("failed")
+        # for info in f.chunks():
+        #     fp.write(info)
+        #     knn_clf = train(settings.MEDIA_ROOT+'/train/')
+        #     for img_path in listdir(settings.MEDIA_ROOT+'/pic/'):
+        #         preds = predict(join(settings.MEDIA_ROOT+'/pic/', img_path), knn_clf=knn_clf)
+        #         print(preds)
+        #         LIST.append(preds)
+        #     os.unlink(filepath)
+        #     return HttpResponse(LIST)
+        fp.write(imgdata)
+    fp.close()
+    knn_clf = train(settings.MEDIA_ROOT + '/train/')
+    for img_path in listdir(settings.MEDIA_ROOT + '/pic/'):
+        preds = predict(join(settings.MEDIA_ROOT + '/pic/', img_path), knn_clf=knn_clf)
+        print(preds)
+        LIST.append(preds)
+    for person in preds:
+        pic_user.append(person[0])
+    print(pic_user)
+    for user in all_user:
+        if user not in pic_user:
+            lack.append(user)
+            lack.append(' ')
+    print(lack)
+    os.unlink(filepath)
+    #return HttpResponse(LIST)
+    return HttpResponse(lack)
+	#return HttpResponse("failed")
 
 
 def train(train_dir,model_save_path = "",n_neighbors = None,knn_algo = "ball_tree",verbose = False):
-    # 参数 train_dir 包含每个已知人员以及其名称的子目录
-    # model_save_path： 模型保存在磁盘上的路径
-
     X = []
     Y = []
     for class_dir in listdir(train_dir):
@@ -103,7 +143,6 @@ def train(train_dir,model_save_path = "",n_neighbors = None,knn_algo = "ball_tre
     return knn_clf
 
 
-
 def predict(X_img_path,knn_clf = None,model_save_path = "",DIST_THRESH = .5):
     if not isfile(X_img_path) or splitext(X_img_path)[1][1:] not in ALLOWED_EXTENSTIONS:
         raise Exception("invalid image path: {}".format(X_img_path))
@@ -123,6 +162,5 @@ def predict(X_img_path,knn_clf = None,model_save_path = "",DIST_THRESH = .5):
     closest_distances = knn_clf.kneighbors(faces_encodings, n_neighbors=1)
 
     is_recognized = [closest_distances[0][i][0] <= DIST_THRESH for i in range(len(X_faces_loc))]
-
-
+    #return [(pred) if rec else ("N/A") for pred, rec in zip(knn_clf.predict(face_encodings),is_recognized)]
     return [(pred,loc) if rec else ("N/A",loc) for pred, loc, rec in zip(knn_clf.predict(faces_encodings),X_faces_loc,is_recognized)]

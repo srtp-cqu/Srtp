@@ -94,33 +94,20 @@
         </ul>
     </div>
 </nav>-->
-<div class="indigo darken-4 imagePage" >
+<div class="indigo darken-4 imagePage" style="padding-top:7%!important">
     <div class="info">
         <p style="color: rgba(255,255,255,0.78);font-size:34px" class="thin">
             人脸检测器
         </p>
-        <p style="color: rgba(255,255,255,0.54);font-size: 18px;margin-top: 40px">
-            使用前请开启摄像头<br><br>
-            点击按键，静候几秒钟，<br>
-            就可以开始人脸识别了<br><br>
-        </p>
-    </div>
-    <div class="camera indigo darken-3">
-        <div id="line"></div>
-        <div class="line" id="line1"></div>
-        <div class="line" id="line2"></div>
-        <video id="video" width="400px" height="400px">
-
-        </video>
-    </div>
-    <div class="output">
-        <div class="indigo darken-3">
-            <img id='image' src="{%static 'img/camera.png' %}" style="width:250px;height: 250px;">
-        </div>
-        <div id="button" class="waves-effect waves-light btn indigo darken-2" onclick="control()">
-            开始检测
-        </div>
-    </div>
+        <button style="margin-top:30px" id="getinfo" class="waves-effect waves-light btn" type="button">开始检测</button>
+        <button style="margin-top:30px" id="getmatch" class="waves-effect waves-light btn" type="button">开始匹配</button>
+        <img id="pic" style="width:400px;height:400px;background-color:white;margin-top:20px" src="http://120.79.240.163:8080/static/img/person.png"/>
+		<div style="color:white">
+			<p style="color: rgba(255,255,255,0.78);font-size:15px" class="thin" >以下人员缺席</p>
+			<br/>
+			<p id="Lack" style="color: rgba(255,255,255,0.78);font-size:15px" class="thin"></p>
+		</div>
+	</div>
 </div>
 
 <div id="modal1" class="modal modal-fixed-footer">
@@ -192,5 +179,46 @@
             state = 0;
         }
     }
+    let img = document.getElementById('pic');
+    function getBase64Image(img) {
+        var canvas = document.createElement("canvas");
+        canvas.width = img.width;
+        canvas.height = img.height;
+        var ctx = canvas.getContext("2d");
+        ctx.drawImage(img,0,0,img.width,img.height);
+        var dataURL = canvas.toDataURL("image/png",0.8)
+        return dataURL
+    }
+    $('#getinfo').on('click',function(){
+		let btn1 = document.getElementById('getinfo');
+		btn1.innerText = "拍照中..."
+		img.src = "http://120.79.240.163:8080/static/img/person.png";
+        $.ajax({
+            type:"POST",
+            url:"/facerec/",
+            data:{csrfmiddlewaretoken:'{{ csrf_token }}'},
+            success:function(data){
+                console.log(data)
+                img.src = "http://120.79.240.163:8000/static/img/image.jpg"+'?'+Math.random();
+				btn1.innerText = "继续检测"
+			}
+        })
+    })
+    data = {'url':'http://120.79.240.163:8000/static/img/image.jpg',csrfmiddlewaretoken:'{{ csrf_token }}'}
+    //data = JSON.stringify(data)
+    $('#getmatch').on('click',function(){
+		let btn2 = document.getElementById('getmatch')
+		btn2.innerText = "匹配中..."
+        $.ajax({
+            url:'/uploadimg/',
+            type:"POST",
+            data:data,
+            success:function(data){
+                console.log(data)
+				document.getElementById('Lack').innerText = data;
+				btn2.innerText = "再次匹配"
+            }
+        })
+    })
 </script>
 </html>

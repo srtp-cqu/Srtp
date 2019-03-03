@@ -19,7 +19,7 @@
       <div class="col s12 m4"></div>
 
         <div class="col s12 m4" >
-            <from enctype="multipart/form-data" method="post" action="/login/">
+            <form enctype="multipart/form-data" method="post" action="/register/">
             {% csrf_token %}
             <div class="card "  style="background-color: #0D47A1;" id="register">
              <div class="card-content white-text">
@@ -56,11 +56,11 @@
 
                 <div class="card-action">
                     <button class="waves-effect waves-light btn" type="button" onclick="back()"> <i class="material-icons right">send</i> 登陆</button>
-                    <button class="waves-effect waves-light btn" type="submit" onclick="register()">  注册<i class="material-icons left">cloud</i></button>
+                    <button class="waves-effect waves-light btn" type="submit">  注册<i class="material-icons left">cloud</i></button>
                 </div>
              </div>
             </div>
-            </from>
+            </form>
         </div>
          </form>
 
