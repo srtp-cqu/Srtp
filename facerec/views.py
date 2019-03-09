@@ -22,8 +22,8 @@ LIST = []
 def upload(request):
     return render(request,'upload.html')
 
+def show():                               #获取所有的学生信息
 
-def show():                               #获取所有的学生信息,把名字存在一个列表里面
     from LoginRegister import models
     user_list = models.Students.objects.all().values('name')
     us_list=list(user_list)
