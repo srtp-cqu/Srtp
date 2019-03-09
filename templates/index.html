@@ -87,25 +87,34 @@
 <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 
 <body>
+<div class="navbar-fixed">
 <nav style="position: fixed">
     <div class="nav-wrapper white" style="background-color:#283593!important">
-        <ul id="nav-mobile" class="right hide-on-med-and-down" style="color: rgba(0,0,0,0.78)">
+        <ul class="side-nav" id="mobile-demo">
             <li><a class="waves-effect waves-light btn indigo darken-4 white-text modal-trigger" href="#modal1" style="color: rgba(0,0,0,0.78)">登陆</a></li>
             <li><a class="waves-effect waves-light btn indigo darken-4 white-text modal-trigger" href="#modal2" style="color: rgba(0,0,0,0.78)">注册</a></li>
         </ul>
     </div>
 </nav>
+</div>
+
+
+
 <div class="indigo darken-4 imagePage" >
-    <div class="info">
+    <div class="col s12 l3">
+    <div class="info ">
         <p style="color: rgba(255,255,255,0.78);font-size:34px" class="thin">
-            人脸检测器
+            多人脸实时检测器
         </p>
         <p style="color: rgba(255,255,255,0.54);font-size: 18px;margin-top: 40px">
-            使用前请开启摄像头<br><br>
-            点击按键，静候几秒钟，<br>
-            就可以开始人脸识别了<br><br>
+            使用前请先登录<br><br>
+            开始检测后，静候几秒钟，<br>
+            就可以开始人脸识别课堂点名了<br><br>
         </p>
     </div>
+    </div>
+
+    <div class="col s12 l3">
     <div class="camera indigo darken-3">
         <div id="line"></div>
         <div class="line" id="line1"></div>
@@ -114,13 +123,17 @@
 
         </video>
     </div>
-    <div class="output">
+    </div>
+
+    <div class="col s12 l3">
+    <div class="output ">
         <div class="indigo darken-3">
             <img id='image' src="../static/img/camera.png" style="width:250px;height: 250px;">
         </div>
         <div id="button" class="waves-effect waves-light btn indigo darken-2" disabled="disabled" onclick="control()">
             开始检测
         </div>
+    </div>
     </div>
 </div>
 
@@ -245,6 +258,7 @@
 	function status1() {
 		app.ok = true
 	}
+
 	function status2() {
 		app.ok = false
 	}
@@ -255,6 +269,7 @@
         // the "href" attribute of .modal-trigger must specify the modal ID that wants to be triggered
         $('#modal1').modal();
 		$('#modal2').modal();
+        $(".button-collapse").sideNav();
         let video = document.getElementById('video');
         if(navigator.getUserMedia){
             navigator.getUserMedia({"video":true},function (stream) {
