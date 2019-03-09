@@ -37,16 +37,16 @@
     <div class="col s12 m5">
       <div class="card " style="background-color: #1F266B !important;">
         <div class="card-image">
-            <img src="{%static 'img/sample-1.jpg' %}">
+            <img src="http://120.79.240.163:8080/{{ img }}">
         </div>
         <div class="card-content">
            <div class="row">
              <div class="input-field col s12">
-             <input style="color: white" disabled value="name" id="disabled" type="text" class="validate">
+             <input style="color: white" disabled value="{{ name }}" id="disabled" type="text" class="validate">
              <label style="color: white" for="disabled">姓名</label>
              </div>
                <div class="input-field col s12">
-             <input style="color: white" disabled value="name" id="disabled" type="text" class="validate">
+             <input style="color: white" disabled value="{{ studentnum }}" id="disabled" type="text" class="validate">
              <label style="color: white" for="disabled">学号</label>
              </div>
            </div>

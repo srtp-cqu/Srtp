@@ -82,6 +82,7 @@
 {% load staticfiles %}
 <script src="{%static 'js/vue.min.js/' %}"></script>
 <script src="{%static 'js/jQuery.js' %}"></script>
+<script src="{%static 'js/jquery_form.js' %}"></script>
 <script src="{%static 'js/materialize.min.js' %}"></script>
 <link rel="stylesheet" href="{%static 'css/materialize.min.css' %}">
 <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
@@ -132,21 +133,31 @@
 
                     <p>
                         <label for="students">
-                          <input name="type" type="radio" id="students" value="students" checked="checked" class="with-gap" /><span >学生</span>
+                          <input name="type" type="radio" id="students" value="students" checked="checked" class="with-gap" onclick="tostu()" /><span >学生</span>
                         </label>
                         <label for="teachers">
-                          <input name="type" type="radio" id="teachers" value="teachers" class="with-gap" />
+                          <input name="type" type="radio" id="teachers" value="teachers" class="with-gap" onclick = "totea()"/>
                           <span >老师</span>
                       </label>
                     </p>
-
+<!--
                     <label for="name">姓名：</label>
                     <input type="text" id="name" name="name">{{ content }}
                     <br/>
                     <label for="pwd">密码：</label>
                     <input type="text" id="pwd" name="pwd">{{ status }}
-                    <br/>
-
+					-->
+					<div class="input-field col s12">
+						<input id="name" type="text" class="validate" name="name">
+						<label id="forname" for="name">学号</label>
+						<span id="hider1" class="helper-text"></span>
+					</div>
+					<div class="input-field col s12">
+						<input id="pwd" type="text" class="validate" name = "pwd">
+						<label for="pwd">密码</label>
+						<span id="hider2" class="helper-text"></span>
+						<br/>
+					</div>
 
                 <div class="card-action">
                     <button class="waves-effect waves-light btn" type="submit"> <i class="material-icons right">send</i> 登陆</button>
@@ -175,10 +186,13 @@
 
                  <br>
                  <label for="name">姓名：</label>
-                 <input type="text" id="name1" name="name">{{ content }}
+                 <input type="text" id="name1" name="name">
                  <br/>
                  <label for="pwd">密码：</label>
-                 <input type="text" id="pwd1" name="pwd">{{ status }}
+                 <input type="text" id="pwd1" name="pwd">
+                 <br/>
+				 <label for="studentnum1" v-if="ok">学号：</label>
+                 <input type="text" id="studentnum1" name="studentnum" v-if="ok">
                  <br/>
                  <label for="img" v-if="ok">上传头像：</label>
                  <input type="file" id="img" v-if="ok" name="img">
@@ -197,6 +211,12 @@
 <script>
 	var LoginForm = document.getElementById("loginform");
 	var RegisterForm = document.getElementById("registerForm");
+	document.getElementById('name').onchange = function(){
+		document.getElementById("hider1").innerText = "";
+	}
+	document.getElementById('pwd').onchange = function(){
+		document.getElementById("hider2").innerText = "";
+	}
 	LoginForm.onsubmit = function(){
 		let name = document.getElementById('name');
 		let pwd =document.getElementById('pwd');
@@ -236,6 +256,26 @@
 			}
 		}
 	}
+	$('#registerForm').ajaxForm(function(data){
+		if (data === "success") {
+			alert("注册成功");
+			window.location = "/";
+		} else if (data === "error"){
+			alert("学号已存在")
+		}
+	})
+	$('#loginform').ajaxForm(function(data){
+		document.getElementById("hider1").innerText = "";
+		document.getElementById("hider2").innerText = "";
+		if (data === "not exist") {
+			document.getElementById("hider1").innerText = "用户不存在";
+		} else if(data === "password error"){
+			document.getElementById("hider2").innerText = "密码错误";
+		} else{
+			console.log(data)
+			window.location = data
+		}
+	})
 	var app = new Vue({
 			el:"#register",
 			data:{
@@ -290,19 +330,7 @@
             state = 0;
         }
     }
-	//function open1() {
-	//	let elem1 = document.querySelectorAll('.modal')[0];
-	//	let instance1 = M.Modal.getInstance(elem1);
-	//	instance1.open()
-	//}
-	
 	function register() {
-		//let elem1 = document.querySelectorAll('.modal')[0];
-		//let elem2 = document.querySelectorAll('.modal')[1];
-		//let instance1 = M.Modal.getInstance(elem1);
-		//let instance2 = M.Modal.getInstance(elem2);
-	//	instance1.destroy()
-		//instance2.open()
 		$('#modal1').modal('close');
 		window.setTimeout(function(){
 			$('#modal2').modal('open');
@@ -314,6 +342,11 @@
 			$('#modal1').modal('open');
 		},300)
 	}
-	
+	function tostu() {
+		document.getElementById('forname').innerText = "学号"
+	}
+	function totea() {
+		document.getElementById('forname').innerText = "用户名"
+	}
 </script>
 </html>
