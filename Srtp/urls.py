@@ -17,6 +17,8 @@ from django.contrib import admin
 from django.conf.urls import url,include
 from django.urls import path
 from facerec import views
+#from django.conf.urls.static import static
+from django.conf import settings
 
 
 urlpatterns = [
@@ -24,5 +26,5 @@ urlpatterns = [
     path('upload/',views.upload),
     path('uploadimg/',views.uploadimg),
     path('facerec/',views.facerecpage),
-    path('',include('LoginRegister.urls'))
+    path('',include('LoginRegister.urls')),
 ]

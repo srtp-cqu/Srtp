@@ -1,16 +1,20 @@
-from django.shortcuts import render,HttpResponse,redirect
+from django.shortcuts import render,HttpResponse,redirect,render_to_response
 import os
 from django.conf import settings
 from django.contrib.auth.hashers import make_password,check_password
 from LoginRegister import models
+from django.http import Http404
+
 # Create your views here.
 def index(request):
     return render(request,'index.html')
 
-	
+
 def login(request):
-    #if request.method == 'GET':
-    #    return render(request,'login.html')
+    if request.method == 'GET':
+        #return render(request,'login.html')
+        raise Http404("你所访问的页面不存在")
+        return render_to_response('404.html',status=404)
     if request.method == 'POST':
         username = request.POST['name']     #前端发送过来的学生学号/老师用户名
         type = request.POST['type']
@@ -56,8 +60,10 @@ def login(request):
 
 
 def register(request):
-    #if request.method == 'GET':
+    if request.method == 'GET':
     #    return render(request,'register.html')
+        raise Http404("你所访问的页面不存在")
+        return render_to_response('404.html',status=404)
     if request.method == 'POST':
         username = request.POST['name']
         type = request.POST['type']
