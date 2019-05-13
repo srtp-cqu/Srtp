@@ -11,17 +11,21 @@ from django.shortcuts import render
 import os,base64
 import requests as req
 from django.conf import settings
-from django.shortcuts import HttpResponse,redirect
+from django.shortcuts import HttpResponse,redirect,render_to_response
 from urllib import parse,request
 import urllib
 from io import BytesIO
+from django.http import Http404
+from LoginRegister import models
 # Create your views here.
 ALLOWED_EXTENSTIONS = {'png','jpg','jpeg'}
 LIST = []
+types = ""
 
 def upload(request):
     return render(request,'upload.html')
 
+	
 def show():                               #获取所有的学生信息
     from LoginRegister import models
     user_list = models.Students.objects.all().values('name')
@@ -33,15 +37,42 @@ def show():                               #获取所有的学生信息
     # print(user)
     return user
 	
+#changes
+def showclass1():
+    from LoginRegister import models
+    user_list = models.Class1.objects.all().values('name')
+    us_list = list(user_list)
+    user = []
+    for us in user_list:
+        user.append(us['name'])
+    return user
+	
+	
+def showclass2():
+    from LoginRegister import models
+    user_list = models.Class2.objects.all().values('name')
+    us_list = list(user_list)
+    user = []
+    for us in user_list:
+        user.append(us['name'])
+    return user
+
+#end
 	
 def facerecpage(request):
+    global types
     #c = request.COOKIES.get('username')
     t = request.COOKIES.get('type')
-    if t != "teachers":
+    if t != "teachers" and t != "drivers":
         return redirect('/', 302)
     if request.method == "GET":
-        return render(request,'images.html')
+        if t == "teachers" :
+            return render(request,'images.html')
+        elif t == "drivers":
+            return render(request,'driimages.html')
     elif request.method == "POST":
+        types = request.POST.get("types")
+        print(types)
         print("post")
         url = 'http://120.79.240.163:8000/takepic/'
         data_con = {'action':'takepic'}
@@ -49,27 +80,19 @@ def facerecpage(request):
         r = urllib.request.Request(url=url,data=data,headers={'content-Type':'application/x-www-form-rulencoded'})
         ans = urllib.request.urlopen(r).read().decode('utf-8')
         print(ans)
-        # img_url = "http://holder.org:65530/static/img/image.jpg"
-        # file_path = settings.MEDIA_ROOT+'/pic'
-        # ext = os.path.splitext(img_url)[1]
-        # file_name = "temp"
-        # response = req.get(img_url)
-        # image = Image.open(BytesIO(response.content))
-        # ls_f = base64.b64encode(BytesIO(response.content).read())
-        # print (type(ls_f))
-        # imgdata = base64.b64decode(ls_f)
-        # filepath = os.path.join(settings.MEDIA_ROOT+'/pic/',file_name+ext)
-        # with open(filepath,'wb') as fp:
-        #     fp.write(imgdata)
-        # fp.close()
         return HttpResponse("success")
 
 def uploadimg(request):
+    global types
     if request.method == "GET":
         raise Http404("你所访问的页面不存在")
         return render_to_response('404.html',status=404)
     if request.method == "POST":
         all_user = show()
+        #changes
+        all_user_class1 = showclass1()
+        all_user_class2 = showclass2()
+        #end
         lack = []
         LIST = []
         pic_user = []
@@ -86,15 +109,6 @@ def uploadimg(request):
         imgdata = base64.b64decode(ls_f)
         filepath = os.path.join(settings.MEDIA_ROOT + '/pic/', file_name + ext)
         with open(filepath, 'wb') as fp:
-            # for info in f.chunks():
-            #     fp.write(info)
-            #     knn_clf = train(settings.MEDIA_ROOT+'/train/')
-            #     for img_path in listdir(settings.MEDIA_ROOT+'/pic/'):
-            #         preds = predict(join(settings.MEDIA_ROOT+'/pic/', img_path), knn_clf=knn_clf)
-            #         print(preds)
-            #         LIST.append(preds)
-            #     os.unlink(filepath)
-            #     return HttpResponse(LIST)
             fp.write(imgdata)
         fp.close()
         knn_clf = train(settings.MEDIA_ROOT + '/train/')
@@ -105,13 +119,40 @@ def uploadimg(request):
         for person in preds:
             pic_user.append(person[0])
         print(pic_user)
-        for user in all_user:
-            if user not in pic_user:
-                lack.append(user)
-                lack.append(' ')
+        #changes
+        if types == "class1" :
+            for user in all_user_class1:
+                if user not in pic_user:
+                    lack.append(user)
+                    lack.append(' ')
+        elif types == "class2":
+            for user in all_user_class2:
+                if user not in pic_user:
+                    lack.append(user)
+                    lack.append(' ')
+#        for user in all_user:
+#            if user not in pic_user:
+#                lack.append(user)
+#                lack.append(' ')
+#end
+        print(types)
+        if types == "schoolbus":
+            for link in pic_user:
+                print(link)
+                if link == "N/A":
+                    continue
+                else:
+                    obj = models.Students.objects.get(name = link)
+                    print(obj.money)
+                    obj.money = obj.money-1
+                    print(obj.money)
+                    obj.save()
         print(lack)
+        print(pic_user)
         os.unlink(filepath)
         #return HttpResponse(LIST)
+        if types == "schoolbus":
+            return HttpResponse(pic_user)
         return HttpResponse(lack)
         #return HttpResponse("failed")
 

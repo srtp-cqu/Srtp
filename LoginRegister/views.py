@@ -35,6 +35,28 @@ def login(request):
                     return stu
                 else:
                     return HttpResponse("password error")
+        elif type == "drivers" :
+            obj = models.Drivers.objects.all().values('name')
+            name = {'name':username}
+            print(type)
+            if name not in obj:
+                print("not exist")
+                #context = {}
+                #context['content'] = 'not exist'
+                #return render(request, 'index.html', context)
+                return HttpResponse("not exist")
+            else:
+                obj1 = models.Drivers.objects.get(name = username)
+                if check_password(pwd,obj1.password):
+                    fac = HttpResponse("/facerec/")
+                    fac.set_cookie('username',username,httponly=False)
+                    fac.set_cookie('type',type,httponly=False)
+                    return fac
+                else:
+                    #context['content'] = ''
+                    #context['status'] = 'password error'
+                    #return render(request, 'index.html', context)
+                    return HttpResponse("password error")
         else:
             obj = models.Teachers.objects.all().values('name')
             name = {'name':username}
@@ -98,8 +120,12 @@ def register(request):
                 obj.save()
                 return HttpResponse("success")
                 #return redirect('/',302)
+        elif type == "drivers" :
+            obj = models.Drivers(name = username, password = dj_pwd)
+            obj.save()
+            return HttpResponse("success")
         else:
-            obj = models.Teachers(name=username,password=dj_pwd)
+            obj = models.Teachers(name = username, password = dj_pwd)
             obj.save()
             return HttpResponse("success")
             #return redirect('/',302)
@@ -116,8 +142,10 @@ def userinfo(request):
         obj = models.Students.objects.get(studentnum=c)
         imgPath = obj.imgpath
         username = obj.name
+        money = obj.money
         print(imgPath)
         context['name'] = username
         context['studentnum'] = c
         context['img'] = imgPath
+        context['money'] = money
     return render(request,'userinfo.html',context)

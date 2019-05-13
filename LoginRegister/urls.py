@@ -9,6 +9,5 @@ urlpatterns = [
     path('register/',views.register),
     path('students/',views.userinfo),
     url(r'^media/(?P<path>.*)$',  serve, {"document_root": settings.MEDIA_ROOT}),
-	#url(r'^static/(?P<path>.*)$',  serve, {'document_root': settings.STATIC_ROOT })
-    # url(r'^static/(?P<path>.*)$','django.views.static.server',{'document_root':settings.STATIC_URL})
+    url(r'^static/(?P<path>.*)$',  serve, {"document_root": settings.STATIC_ROOT}),
 ]

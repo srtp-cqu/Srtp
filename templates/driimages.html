@@ -118,12 +118,12 @@
 		</div>-->
 		<div class="input-field col s12">
 			<select id="positions">
-				<option class="white-text" value="" disabled selected>选择使用途径</option>
+				<!--<option class="white-text" value="" disabled selected>选择使用途径</option>
 				<optgroup label="课堂点名-班级选择">
 					<option class="white-text" value="class1">班级1</option>
 					<option class="white-text" value="class2">班级2</option>
-				</optgroup>
-<!-- 				<option class="white-text" value="schoolbus">校车计费</option> -->
+				</optgroup>-->
+				<option class="white-text" value="schoolbus">校车计费</option>
 			</select>
 			<label>Optgroups</label>
 		</div>
@@ -131,7 +131,7 @@
         <button style="margin-top:30px" id="getmatch" class="waves-effect waves-light btn" type="button">开始匹配</button>
         <img id="pic" style="width:400px;height:400px;background-color:white;margin-top:20px" src="http://120.79.240.163/static/img/person.png"/>
 		<div style="color:white">
-			<p style="color: rgba(255,255,255,0.78);font-size:15px" class="thin" >以下人员缺席</p>
+			<p style="color: rgba(255,255,255,0.78);font-size:15px" class="thin" >乘车人员如下</p>
 			<br/>
 			<p id="Lack" style="color: rgba(255,255,255,0.78);font-size:15px" class="thin"></p>
 		</div>
@@ -183,7 +183,7 @@
             })
         }
     });
-    function setCookie(name, value, seconds) {
+	function setCookie(name, value, seconds) {
 		seconds = seconds || 0;
 		var expires = "";
 		if (seconds != 0) {
@@ -232,6 +232,7 @@
                 console.log(data)
 				document.getElementById('Lack').innerText = data;
 				btn2.innerText = "再次匹配"
+				alert("以下学生已被扣费:"+data)
             }
         })
     })

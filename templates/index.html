@@ -80,7 +80,7 @@
     </style>
 </head>
 {% load staticfiles %}
-<script src="{%static 'js/vue.min.js/' %}"></script>
+<script src="https://cdn.jsdelivr.net/npm/vue@2.6.6/dist/vue.js"></script>
 <script src="{%static 'js/jQuery.js' %}"></script>
 <script src="{%static 'js/jquery_form.js' %}"></script>
 <script src="{%static 'js/materialize.min.js' %}"></script>
@@ -151,7 +151,11 @@
                         <label for="teachers">
                           <input name="type" type="radio" id="teachers" value="teachers" class="with-gap" onclick = "totea()"/>
                           <span >老师</span>
-                      </label>
+                        </label>
+					    <label for="drivers">
+                          <input name="type" type="radio" id="drivers" value="drivers" class="with-gap" onclick = "todri()"/>
+                          <span >校车司机</span>
+                        </label>
                     </p>
 <!--
                     <label for="name">姓名：</label>
@@ -194,7 +198,11 @@
                         <label for="teachers1">
                           <input name="type" type="radio" id="teachers1" value="teachers" class="with-gap" onclick="status2()" />
                           <span >老师</span>
-                      </label>
+                        </label>
+					    <label for="drivers1">
+                          <input name="type" type="radio" id="drivers1" value="drivers" class="with-gap" onclick="status3()" />
+                          <span >校车司机</span>
+                        </label>
                  </p>
 
                  <br>
@@ -302,6 +310,10 @@
 	function status2() {
 		app.ok = false
 	}
+	
+	function status3() {
+		app.ok = false
+	}
 	function back() {
 		window.location = "/login"
 	}
@@ -361,6 +373,9 @@
 		document.getElementById('forname').innerText = "学号"
 	}
 	function totea() {
+		document.getElementById('forname').innerText = "用户名"
+	}
+	function todri() {
 		document.getElementById('forname').innerText = "用户名"
 	}
 </script>
